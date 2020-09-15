@@ -44,6 +44,13 @@ defmodule Sanbase.Metric.Helper do
                                            module.available_histogram_metrics(),
                                            fn metric -> %{metric: metric, module: module} end
                                          )
+
+    @table_structured_metric_module_mapping_acc Enum.map(
+                                                  module.available_table_structured_metrics(),
+                                                  fn metric ->
+                                                    %{metric: metric, module: module}
+                                                  end
+                                                )
   end
 
   @aggregations List.flatten(@aggregations_acc) |> Enum.uniq()
@@ -51,6 +58,11 @@ defmodule Sanbase.Metric.Helper do
   @restricted_metrics List.flatten(@restricted_metrics_acc) |> Enum.uniq()
   @timeseries_metric_module_mapping List.flatten(@timeseries_metric_module_mapping_acc)
                                     |> Enum.uniq()
+
+  @table_structured_metric_module_mapping List.flatten(
+                                            @table_structured_metric_module_mapping_acc
+                                          )
+                                          |> Enum.uniq()
 
   @histogram_metric_module_mapping List.flatten(@histogram_metric_module_mapping_acc)
                                    |> Enum.uniq()
@@ -74,6 +86,9 @@ defmodule Sanbase.Metric.Helper do
   @metrics_mapset MapSet.new(@metrics)
   @timeseries_metrics_mapset MapSet.new(@timeseries_metrics)
   @histogram_metrics_mapset MapSet.new(@histogram_metrics)
+
+  @table_structured_metrics Enum.map(@table_structured_metric_module_mapping, & &1.metric)
+  @table_structured_metrics_mapset MapSet.new(@table_structured_metrics)
 
   def access_map(), do: @access_map
   def aggregations_per_metric(), do: @aggregations_per_metric
