@@ -94,9 +94,18 @@ defmodule Sanbase.Clickhouse.Metric do
 
   def table_data(_metric, [], _from, _to, _opts), do: {:ok, %{}}
 
-  def table_data(metric, selector, from, to, opts) do
+  def table_data(metric, selector, from, to, limit) do
     aggregation = Keyword.get(opts, :aggregation, nil) || Map.get(@aggregation_map, metric)
-    filters = Keyword.get(opts, :additional_filters, [])
+
+    {query, args} = table_data_query(metric, selector, from, to, interval, limit)
+
+    ClickhouseRepo.query_transform(query, args, fn %{columns: columns, rows: rows, values: values} ->
+      %{
+        columns: columns,
+        rows: rows,
+        values: values
+      }
+    end)
   end
 
   @impl Sanbase.Metric.Behaviour

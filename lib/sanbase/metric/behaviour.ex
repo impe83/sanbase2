@@ -4,7 +4,6 @@ defmodule Sanbase.Metric.Behaviour do
   """
 
   @type slug :: String.t()
-  @type market_segment :: String.t()
   @type metric :: String.t()
   @type interval :: String.t()
   @type opts :: Keyword.t()
@@ -33,11 +32,13 @@ defmodule Sanbase.Metric.Behaviour do
           value: float()
         }
 
-  @type table_data_tuples :: {slug, market_segment}
-
   @type histogram_data :: list(histogram_data_map())
 
-  @type table_data :: list(table_data_tuples())
+  @type table_data :: %{
+          columns: list(String.t()),
+          rows: list(String.t()),
+          values: list(list(number()))
+        }
 
   @type aggregation :: nil | :any | :sum | :avg | :min | :max | :last | :first | :median
 
@@ -66,7 +67,8 @@ defmodule Sanbase.Metric.Behaviour do
               metric :: metric(),
               selector :: selector,
               from :: DateTime.t(),
-              to :: DateTime.t()
+              to :: DateTime.t(),
+              limit :: non_neg_integer()
             ) :: {:ok, table_data} | {:error, String.t()}
 
   @callback aggregated_timeseries_data(
